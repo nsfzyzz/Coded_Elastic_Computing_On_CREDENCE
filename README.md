@@ -10,9 +10,9 @@ BSD 3-Clause License
 
 Copyright (c) 2018, Carnegie Mellon University All rights reserved.
 
-Note that the following steps are not free!!!
-
 Step 0: Setup an AWS account.
+
+Note that the following the steps below will incur cost to your AWS account!!!
 
 Step 1: Go to deployment_scripts sub-directory
 
@@ -36,7 +36,11 @@ Step 4: Once the request is complete, run the command
 
 It will return all the results logged by the logger to the parent directory with name results_${current_date_time}. This directory will have sub-directories named after the instance dns name for easier analysis.
 
-Step 5: After you have downloaded the results, run ./clean_infra.sh all to clean all the resources and follow the script commands.
+Step 5: After you have downloaded the results, run
+
+./clean_infra.sh all 
+
+to clean all the resources and follow the script commands.
 
 If you find our implementation useful, please consider citing the following paper:
 
