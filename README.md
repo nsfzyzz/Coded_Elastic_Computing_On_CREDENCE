@@ -1,8 +1,10 @@
 # Coded Elastic Computing using CREDENCE
 
 The implementation of coded elastic computing is done using CREDENCE:
+
 https://github.com/Credence-Research-Org/credence
-The CREDENCE is under the following license:
+
+The CREDENCE project is under the following license:
 
 BSD 3-Clause License
 
