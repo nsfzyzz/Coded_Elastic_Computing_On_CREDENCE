@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="debug">
+    <Appenders>
+        <Console name="Console-Appender" target="SYSTEM_OUT">
+            <PatternLayout>
+                <pattern>
+                    [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+                </pattern>>
+            </PatternLayout>
+        </Console>
+        <RollingRandomAccessFile name="Rolling-Random-Access-File-Appender"
+                                 fileName="/home/ubuntu/worker_setup/results/results.log"
+                                 filePattern="/home/ubuntu/worker_setup/results/results.log.%d{yyyy-MM-dd-hh-mm}.gz">
+            <PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="1 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+        <AsyncRoot level="debug">
+            <AppenderRef ref="Rolling-Random-Access-File-Appender"/>
+            <AppenderRef ref="Console-Appender"/>
+        </AsyncRoot>
+    </Loggers>
+</Configuration>
