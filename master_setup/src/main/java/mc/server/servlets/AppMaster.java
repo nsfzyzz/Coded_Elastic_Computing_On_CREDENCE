@@ -56,6 +56,7 @@ public class AppMaster {
             Decoding_matrix_collections = select_encoding_matrix(Decoding_matrix);
             TypeMatrixDouble[] Received_rearranged = new TypeMatrixDouble[NumWorkers];
             long iter_num_all = 1000;
+            long iter_num_not_count = 100;
 
             // The time_ave is for logging the average time for different configurations
             long[] time_ave = new long[NumWorkersSet.length];
@@ -64,7 +65,7 @@ public class AppMaster {
             long[] time_length = new long[NumWorkersSet.length];
             java.util.Arrays.fill(time_length, 0);
             // The time_log is for logging the time for each iteration
-            long[] time_log = new long[(int) iter_num_all];
+            long[] time_log = new long[(int) (iter_num_all-iter_num_not_count)];
             java.util.Arrays.fill(time_log, 0);
 
             for (long iter_num = 0; iter_num < iter_num_all + 1; iter_num++) {
@@ -73,7 +74,11 @@ public class AppMaster {
 
                 if (iter_num > 0 && Math.random() < 0.02) {
 
-                    NumWorkers = NumWorkersSet[rand.nextInt(NumWorkersSet.length)];
+                    int NumWorkers_old = NumWorkers;
+                    while (NumWorkers_old == NumWorkers) {
+                        NumWorkers = NumWorkersSet[rand.nextInt(NumWorkersSet.length)];
+                    }
+
                     logger.info("The number of machines changes to " + NumWorkers + "!!");
                     // Change the settings on the master
                     ChangeNumMachinesCall = true;
@@ -159,10 +164,10 @@ public class AppMaster {
                     }
                     logger.info("Time taken to complete decoding is " + (System.nanoTime() - DecodingTimeStart) / 1000000);
 
-                    if (iter_num > 100) {
+                    if (iter_num > iter_num_not_count) {
                         // Log the timing information
                         long timeSpent = (System.nanoTime() - ThreadTimeStart) / 1000000;
-                        time_log[(int) iter_num - 1] = timeSpent;
+                        time_log[(int) (iter_num - 1 - iter_num_not_count)] = timeSpent;
                         //int configureInd = Arrays.asList(NumWorkersSet).indexOf(NumWorkers);
                         int configureInd = ArrayUtils.indexOf(NumWorkersSet, NumWorkers);
                         if (configureInd == -1) {
@@ -179,7 +184,15 @@ public class AppMaster {
                         " is " + time_ave[i] / time_length[i] + " and the number of iterations is " + time_length[i]);
             }
 
-            TypeVectorInt time_log_to_file = new TypeVectorInt((int) iter_num_all, time_log);
+            logger.info("The following is the log of the per-iteration time:\n");
+            String u = "";
+
+            for (int i = 0; i < time_log.length; i++) {
+                u += time_log[i]+", ";
+            }
+            logger.info(u + "\n");
+
+            TypeVectorInt time_log_to_file = new TypeVectorInt((int) (iter_num_all - iter_num_not_count), time_log);
             time_log_to_file.writeVectToFile("/home/ubuntu/time_log.txt", " ");
 
         } catch (Exception e) {
