@@ -39,7 +39,7 @@ class AppWorker {
     private static int workerNum;
     private static TypeMatrixDouble GeneratorMatrix;
 
-    public static TypeMatrixDouble mat = new TypeMatrixDouble(1,1,0,1);
+    private static TypeMatrixDouble mat = new TypeMatrixDouble(1,1,0,1);
 
     String vectMatMult(String vectInStr) {
         String vectResp = "";
@@ -93,7 +93,7 @@ class AppWorker {
         return vectResp;
     }
 
-    public void UpdateSettingsWhenNumMachinesChange() {
+    private void UpdateSettingsWhenNumMachinesChange() {
 
         // Randomly generate the number of machines
         SendSize = CodedSamplePerWorker/NumWorkers*RecThreshold;

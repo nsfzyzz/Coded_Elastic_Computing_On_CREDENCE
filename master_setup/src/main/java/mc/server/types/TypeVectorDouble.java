@@ -109,6 +109,10 @@ public class TypeVectorDouble {
         return prodVector;
     }
 
+    /**
+     * Method for vector summation
+     */
+
     public double vecSum() {
         double sum = 0;
 
@@ -117,6 +121,7 @@ public class TypeVectorDouble {
         }
         return sum;
     }
+
     /**
      * Method for vector vector dot product
      *

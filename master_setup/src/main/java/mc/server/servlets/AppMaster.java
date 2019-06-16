@@ -41,7 +41,7 @@ public class AppMaster {
     final private static Logger logger = LogManager.getLogger(AppMaster.class);
     private List<String> dns_arr_workers = CommAPI.getEC2DNSList("worker", ",");
     private static AtomicReference<String> shared = new AtomicReference<>();
-    volatile TypeMatrixDouble xt_receive = new TypeMatrixDouble(NumWorkers,ReceiveSize,0,0);
+    private volatile TypeMatrixDouble xt_receive = new TypeMatrixDouble(NumWorkers,ReceiveSize,0,0);
     private static TypeMatrixDouble Decoding_matrix = new TypeMatrixDouble(NumWorkers_initial,RecThreshold,-1,1);
     private TypeMatrixDouble[] Decoding_matrix_collections;
     private Random rand = new Random();
@@ -90,13 +90,9 @@ public class AppMaster {
                 TypeVectorDouble vect = new TypeVectorDouble(SendSize + 1, 0, 100);
                 vect.SetValue((double) NumWorkers, SendSize);
 
-                long SerializeTimeStart = System.nanoTime();
-
                 // Serialize
                 // Set the input vector to the atomic reference for different threads to access
                 shared.set(CommAPI.stringURLEncode(vect.serialize(",")));
-                //logger.info("Time taken to complete vector serialization is " + (System.nanoTime() - SerializeTimeStart) / 1000000);
-
 
                 // Start the threads
 
@@ -127,6 +123,9 @@ public class AppMaster {
                     // the first iteration is only for sending the worker id
                     // when NumWorkers changes, broadcast the NumWorkers
                     // no need to decode in these two situations
+
+                    // Also skip the logging phase to show a verticle line in the plot
+
                     ChangeNumMachinesCall = false;
                     continue;
 
@@ -164,11 +163,14 @@ public class AppMaster {
                     }
                     logger.info("Time taken to complete decoding is " + (System.nanoTime() - DecodingTimeStart) / 1000000);
 
+                    // Update the timing statistics
+
                     if (iter_num > iter_num_not_count) {
+
                         // Log the timing information
                         long timeSpent = (System.nanoTime() - ThreadTimeStart) / 1000000;
                         time_log[(int) (iter_num - 1 - iter_num_not_count)] = timeSpent;
-                        //int configureInd = Arrays.asList(NumWorkersSet).indexOf(NumWorkers);
+
                         int configureInd = ArrayUtils.indexOf(NumWorkersSet, NumWorkers);
                         if (configureInd == -1) {
                             throw new ArithmeticException("Number of workers is not properly updated!!");
@@ -188,6 +190,7 @@ public class AppMaster {
             String u = "";
 
             for (int i = 0; i < time_log.length; i++) {
+
                 u += time_log[i]+", ";
             }
             logger.info(u + "\n");
@@ -201,7 +204,7 @@ public class AppMaster {
         }
     }
 
-    public void UpdateSettingsWhenNumMachinesChange() {
+    private void UpdateSettingsWhenNumMachinesChange() {
 
         // Randomly generate the number of machines
         ReceiveSize = CodedSamplePerWorker/NumWorkers*RecThreshold;
@@ -210,7 +213,7 @@ public class AppMaster {
         Decoding_matrix_collections = select_encoding_matrix(Decoding_matrix);
 
     }
-    public TypeMatrixDouble[] select_encoding_matrix(TypeMatrixDouble Decoding_matrix) {
+    private TypeMatrixDouble[] select_encoding_matrix(TypeMatrixDouble Decoding_matrix) {
 
         TypeMatrixDouble[] Generator_matrix_collections = new TypeMatrixDouble[NumWorkers];
         TypeMatrixDouble[] Decoding_matrix_collections = new TypeMatrixDouble[NumWorkers];
@@ -244,14 +247,12 @@ public class AppMaster {
         private final String dns;
         private final int ind;
         private final int length;
-        private final long multithreading_time_start;
         private final long iter_num;
 
         MyRunnable(String dns, int ind, int length, long multithreading_time_start, long iter_num) {
             this.dns = dns;
             this.ind = ind;
             this.length = length;
-            this.multithreading_time_start = multithreading_time_start;
             this.iter_num = iter_num;
         }
 

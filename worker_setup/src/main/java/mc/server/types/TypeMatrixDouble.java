@@ -14,8 +14,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class TypeMatrixDouble {
 
-    double[][] mat;
-    int colTotal;
+    private double[][] mat;
+    private int colTotal;
     private int rowTotal;
 
     /**
@@ -144,9 +144,7 @@ public class TypeMatrixDouble {
 
         double[] row = new double[this.colTotal];
 
-        for (int i=0; i<this.colTotal; i++) {
-            row[i] = this.mat[row_ind][i];
-        }
+        System.arraycopy(this.mat[row_ind], 0, row, 0, this.mat[row_ind].length);
 
         return new TypeVectorDouble(this.colTotal, row);
     }
